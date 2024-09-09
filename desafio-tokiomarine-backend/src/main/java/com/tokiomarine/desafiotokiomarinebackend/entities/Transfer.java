@@ -54,7 +54,7 @@ public class Transfer {
         this.transferValue = transfer.getTransferValue();
         this.transferPercentage = transfer.getTransferPercentage();
         this.feeAmount = transfer.getFeeAmount();
-        this.totalTransferValue = transfer.getTransferValue();
+        this.totalTransferValue = transfer.getTotalTransferValue();
         this.transferDate = transfer.getTransferDate();
         this.scheduledDate = transfer.getScheduledDate();
     }

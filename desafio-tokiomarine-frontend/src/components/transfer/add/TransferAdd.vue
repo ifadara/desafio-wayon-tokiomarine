@@ -1,77 +1,79 @@
 <template>
-    <div>
+    <div >
         <BForm @submit.prevent="addTransfer">
           <BCard class="border">
-            <BRow><BCol 
-                        md="3"
+            <button @click="addMode = false" class="close-btn">&times;</button>
+            <BRow>
+                <BCol md="3">
+                    <BFormGroup
+                    label="Conta de origem:*"
+                    label-for="originAccount"
+                    :state="!errors.originAccount ? true : false"
+                    invalid-feedback="Conta de origem é obrigatória e deve ser um número válido."
+                    max="10"
                     >
-                        <BFormGroup
-                            label="Conta de origem:*"
-                            label-for="originAccount"
-                        >
-                            <BFormInput
-                                id="originAccount"
-                                v-model="addNew.originAccount"
-                                placeholder="XXXXXXXXXX"
-                                type="number"
-                            />
-                        </BFormGroup>
-
-                    </BCol>
-                    <BCol 
-                        md="3"
+                    <BFormInput
+                        id="originAccount"
+                        v-model="addNew.originAccount"
+                        placeholder="XXXXXXXXXX"
+                        type="number"
+                        :state="!errors.originAccount ? true : false"
+                    />
+                    </BFormGroup>
+                </BCol>
+                <BCol md="3">
+                    <BFormGroup
+                    label="Conta de destino:*"
+                    label-for="targetAccount"
+                    :state="!errors.targetAccount ? true : false"
+                    invalid-feedback="Conta de destino é obrigatória e deve ser um número válido."
                     >
-                        <BFormGroup
-                            label="Conta de destino:*"
-                            label-for="targetAccount"
-                        >
-                            <BFormInput
-                                id="targetAccount"
-                                v-model="addNew.targetAccount"
-                                placeholder="XXXXXXXXXX"
-                                type="number"
-                            />
-                        </BFormGroup>
-
-                    </BCol>
-                    <BCol 
-                        md="3"
+                    <BFormInput
+                        id="targetAccount"
+                        v-model="addNew.targetAccount"
+                        placeholder="XXXXXXXXXX"
+                        type="number"
+                        :state="!errors.targetAccount ? true : false"
+                        max="10"
+                    />
+                    </BFormGroup>
+                </BCol>
+                <BCol md="3">
+                    <BFormGroup
+                    label="Valor a ser transferido:*"
+                    label-for="transferValue"
+                    :state="!errors.transferValue ? true : false"
+                    invalid-feedback="Valor é obrigatório e deve ser um valor numérico válido."
                     >
-                        <BFormGroup
-                            label="Valor a ser trasnferido:*"
-                            label-for="transferValue"
-                        >
-                            <BFormInput
-                                id="transferValue"
-                                v-model="addNew.transferValue"
-                                :value="formattedValue"
-                                @input="updateValue"
-                                placeholder="R$ 0,00"
-                            />
-                        </BFormGroup>
-
-                    </BCol>
-                    <BCol 
-                        md="3"
-                        
+                    <BFormInput
+                        id="transferValue"
+                        v-model="addNew.transferValue"
+                        :value="formattedValue"
+                        @input="updateValue"
+                        placeholder="R$ 0,00"
+                        :state="!errors.transferValue ? true : false"
+                    />
+                    </BFormGroup>
+                </BCol>
+                <BCol md="3">
+                    <BFormGroup
+                    label="Qual a data de agendamento?:*"
+                    label-for="scheduledDate"
+                    :state="!errors.scheduledDate ? true : false"
+                    invalid-feedback="Data de agendamento é obrigatória."
                     >
-                        <BFormGroup
-                            label="Qual a data de agendamento?:*"
-                            label-for="scheduledDate"
-                        >
-                            <BFormInput
-                                id="scheduledDate"
-                                v-model="addNew.scheduledDate"
-                                type="date"
-                            />
-                        </BFormGroup>
-
-                    </BCol>
-
+                    <BFormInput
+                        id="scheduledDate"
+                        v-model="addNew.scheduledDate"
+                        type="date"
+                        :state="!errors.scheduledDate ? true : false"
+                    />
+                    </BFormGroup>
+                </BCol>
             </BRow>
 
             <BRow>
-                <BCol class="text-right mt-2" md="12" align-self="end">
+                <BCol class="text-right mt-2 p-2" md="12" align-self="end">
                     <BButton
                         variant="success"
                         class="btn-md"
@@ -82,6 +84,7 @@
                     <BButton
                         class="btn-md"
                         variant="danger"
+                        @click="resetForm"
                     >
                         Cancelar
                     </BButton>  
@@ -125,14 +128,42 @@
         formattedValue() {
             return this.formatValue(this.addNew.transferValue);
         },
+        isFormValid() {
+            return !this.errors.originAccount && 
+                    !this.errors.targetAccount && 
+                    !this.errors.transferValue && 
+                    !this.errors.scheduledDate;
+        }
       },
 
       data() {
         return{
-            addNew: {},
+            addNew: {
+                originAccount: '',
+                targetAccount: '',
+                transferValue: '',
+                scheduledDate: '',
+            },
+            errors: {},
         }
       },
       methods: {
+
+        validateForm() {
+            this.errors = {};
+            if (this.addNew.originAccount.length !== 10) {
+                this.errors.originAccount = true;
+            }
+            if (!this.addNew.targetAccount.length !== 10) {
+                this.errors.targetAccount = true;
+            }
+            if (!this.addNew.transferValue || isNaN(this.removeSpecialCharacters(this.addNew.transferValue))) {
+                this.errors.transferValue = true;
+            }
+            if (!this.addNew.scheduledDate) {
+                this.errors.scheduledDate = true;
+            }
+        },
 
         formatValue(value) {
             if (!value) return 'R$ 0,00';
@@ -142,17 +173,32 @@
 
         updateValue(event) {
             const inputValue = event.target.value.replace(/[^\d]/g, '');
-            this.addNew.transferValue = (parseFloat(inputValue) / 100).toFixed(2);
+            this.addNew.transferValue = (inputValue)
+        },
+        removeSpecialCharacters(value) {
+            // Remove o símbolo "R$" e espaços
+            let newValue = value.replace(/[^0-9,]/g, '');
+            
+            // Substitui a vírgula por um ponto
+            newValue = newValue.replace(',', '.');
+
+            return newValue;
         },
 
         async addTransfer(){
-            configAxios.post('/v1/transfer', this.addNew).then(res => {
-                this.addNew = res
-                return
+            this.addNew.transferValue = this.addNew.transferValue.includes(',') ? this.removeSpecialCharacters(this.addNew.transferValue) : this.addNew.transferValue
+            configAxios.post('/v1/transfer', this.addNew).then(() => {
+                this.addNew = {}
+                this.$emit('transfer-added')
             }).catch(() => {
                 
             })
-        }
+        },
+
+        resetForm() {
+            this.addNew = {}
+            this.errors = {}
+        },
 
       }
     }
@@ -162,6 +208,18 @@
     
     <!-- Add "scoped" attribute to limit CSS to this component only -->
     <style scoped>
-    
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: red; 
+        }
     </style>
     

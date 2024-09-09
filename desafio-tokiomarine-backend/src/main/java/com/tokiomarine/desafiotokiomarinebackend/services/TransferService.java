@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 
+import java.time.LocalDate;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
 
 @Service
 public class TransferService {
@@ -44,40 +46,48 @@ public class TransferService {
     }
 
     private TransferDto calculateFeeAmountAndTotalTransferValue(TransferDto transferDto){
-        Period period = Period.between(transferDto.getTransferDate(), transferDto.getScheduledDate());
-        double percentageValue = 0.0;
+        transferDto.setTransferDate(LocalDate.now());
+        Long period = ChronoUnit.DAYS.between(transferDto.getTransferDate(), transferDto.getScheduledDate());
+        Double percentageValue = 0.0;
+        Double totalValue = 0.0;
 
 
-        if (period.isZero() && transferDto.getTotalTransferValue() > 3.00) {
+        if (period == 0 && transferDto.getTransferValue() > 3.00) {
             percentageValue = transferDto.getTransferValue() * 0.025;
             transferDto.setFeeAmount(percentageValue);
             transferDto.setTransferPercentage(0.025 * 100);
-            transferDto.setTotalTransferValue(transferDto.getTransferValue() + transferDto.getFeeAmount());
-        } else if (period.getDays() >= 1 && period.getDays() <= 10 && transferDto.getTotalTransferValue() > 12.00) {
+            totalValue = transferDto.getTransferValue() + percentageValue;
+            transferDto.setTotalTransferValue(totalValue);
+        } else if (period >= 1 && period <= 10 && transferDto.getTransferValue() > 12.00) {
             percentageValue = transferDto.getTransferValue() * 0.0;
             transferDto.setFeeAmount(percentageValue);
-            transferDto.setTransferPercentage(0.0 * 100);
-            transferDto.setTotalTransferValue(transferDto.getTransferValue() + transferDto.getFeeAmount());
-        } else if (period.getDays() >= 11 && period.getDays() <= 20) {
+            transferDto.setTransferPercentage(0.0);
+            totalValue = transferDto.getTransferValue() + percentageValue;
+            transferDto.setTotalTransferValue(totalValue);
+        } else if (period >= 11 && period <= 20) {
             percentageValue = transferDto.getTransferValue() * 0.082;
             transferDto.setFeeAmount(percentageValue);
             transferDto.setTransferPercentage(0.082 * 100);
-            transferDto.setTotalTransferValue(transferDto.getTransferValue() + transferDto.getFeeAmount());
-        } else if (period.getDays() >= 21 && period.getDays() <= 30) {
+            totalValue = transferDto.getTransferValue() + percentageValue;
+            transferDto.setTotalTransferValue(totalValue);
+        } else if (period >= 21 && period <= 30) {
             percentageValue = transferDto.getTransferValue() * 0.069;
             transferDto.setFeeAmount(percentageValue);
             transferDto.setTransferPercentage(0.069 * 100);
-            transferDto.setTotalTransferValue(transferDto.getTransferValue() + transferDto.getFeeAmount());
-        } else if (period.getDays() >= 31 && period.getDays() <= 40) {
+            totalValue = transferDto.getTransferValue() + percentageValue;
+            transferDto.setTotalTransferValue(totalValue);
+        } else if (period >= 31 && period <= 40) {
             percentageValue = transferDto.getTransferValue() * 0.047;
             transferDto.setFeeAmount(percentageValue);
             transferDto.setTransferPercentage(0.047 * 100);
-            transferDto.setTotalTransferValue(transferDto.getTransferValue() + transferDto.getFeeAmount());
-        } else if (period.getDays() >= 41 && period.getDays() <= 50) {
+            totalValue = transferDto.getTransferValue() + percentageValue;
+            transferDto.setTotalTransferValue(totalValue);
+        } else if (period >= 41 && period <= 50) {
             percentageValue = transferDto.getTransferValue() * 0.017;
             transferDto.setFeeAmount(percentageValue);
             transferDto.setTransferPercentage(0.017 * 100);
-            transferDto.setTotalTransferValue(transferDto.getTransferValue() + transferDto.getFeeAmount());
+            totalValue = transferDto.getTransferValue() + percentageValue;
+            transferDto.setTotalTransferValue(totalValue);
         } else {
             throw new RuntimeException("Não há taxa aplicável a esta tranferencia, tente novamente com novos parâmetros");
         }

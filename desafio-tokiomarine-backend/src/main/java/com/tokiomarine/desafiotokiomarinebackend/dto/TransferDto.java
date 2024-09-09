@@ -3,6 +3,8 @@ package com.tokiomarine.desafiotokiomarinebackend.dto;
 import com.tokiomarine.desafiotokiomarinebackend.entities.Transfer;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 public class TransferDto {
@@ -40,7 +42,7 @@ public class TransferDto {
         this.transferValue = transfer.getTransferValue();
         this.transferPercentage = transfer.getTransferPercentage();
         this.feeAmount = transfer.getFeeAmount();
-        this.totalTransferValue = transfer.getTransferValue();
+        this.totalTransferValue = transfer.getTotalTransferValue();
         this.transferDate = transfer.getTransferDate();
         this.scheduledDate = transfer.getScheduledDate();
     }
@@ -74,7 +76,7 @@ public class TransferDto {
     }
 
     public void setTransferValue(Double transferValue) {
-        this.transferValue = transferValue;
+        this.transferValue = roundToTwoDecimalPlaces(transferValue);
     }
 
     public Double getTransferPercentage() {
@@ -82,7 +84,7 @@ public class TransferDto {
     }
 
     public void setTransferPercentage(Double transferPercentage) {
-        this.transferPercentage = transferPercentage;
+        this.transferPercentage = roundToTwoDecimalPlaces(transferPercentage);
     }
 
     public Double getFeeAmount() {
@@ -90,7 +92,7 @@ public class TransferDto {
     }
 
     public void setFeeAmount(Double feeAmount) {
-        this.feeAmount = feeAmount;
+        this.feeAmount = roundToTwoDecimalPlaces(feeAmount);
     }
 
     public Double getTotalTransferValue() {
@@ -98,7 +100,7 @@ public class TransferDto {
     }
 
     public void setTotalTransferValue(Double totalTransferValue) {
-        this.totalTransferValue = totalTransferValue;
+        this.totalTransferValue = roundToTwoDecimalPlaces(totalTransferValue);
     }
 
     public LocalDate getTransferDate() {
@@ -115,5 +117,14 @@ public class TransferDto {
 
     public void setScheduledDate(LocalDate scheduledDate) {
         this.scheduledDate = scheduledDate;
+    }
+
+    private Double roundToTwoDecimalPlaces(Double value) {
+        if (value == null) {
+            return null;
+        }
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(2, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 }
