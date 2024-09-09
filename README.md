@@ -1,7 +1,7 @@
 # Desafio Tokiomarine
 
 Para conseguir rodar o projeto local é necessário as IDE's VSCode e IntelliJ, 
-também é necessário ter instalado em seu computador o Node na versão 20.15.1 e também o JDK (Java) 21.
+também é necessário ter instalado em seu computador o Node na versão 20.15.1 e também o JDK (Java) 11.
 
 ## Passos para executar o projeto
 
