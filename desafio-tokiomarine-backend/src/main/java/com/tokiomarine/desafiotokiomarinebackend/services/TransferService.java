@@ -5,9 +5,11 @@ import com.tokiomarine.desafiotokiomarinebackend.entities.Transfer;
 import com.tokiomarine.desafiotokiomarinebackend.repositories.TransferRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 
 import java.time.Period;
@@ -27,11 +29,18 @@ public class TransferService {
 
     @Transactional
     public TransferDto save(TransferDto transferDto){
-        TransferDto completeTransfer = calculateFeeAmountAndTotalTransferValue(transferDto);
-        Transfer transfer = new Transfer(completeTransfer);
-        transfer = transferRepository.save(transfer);
+        try {
+            TransferDto completeTransfer = calculateFeeAmountAndTotalTransferValue(transferDto);
+            Transfer transfer = new Transfer(completeTransfer);
+            transfer = transferRepository.save(transfer);
 
-        return new TransferDto(transfer);
+            return new TransferDto(transfer);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+
+
     }
 
     private TransferDto calculateFeeAmountAndTotalTransferValue(TransferDto transferDto){
