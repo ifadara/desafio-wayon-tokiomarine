@@ -8,15 +8,14 @@
         <BCard class="border">
             <div>
               <h1
-                class="align-self"
+                align="left"
               >
-                Inicio do teste
+                Agendar tranferências
               </h1>
+              <TransferAdd
+                @transfer-added="listTransfers"
+              />
             </div>
-            <TransferAdd 
-              :dados-itens="dadosItens"
-              @transfer-added="listTransfers"
-            />
 
             <BCard class="border mt-3">
               <BTable

@@ -1,5 +1,5 @@
 <template>
-    <div >
+    <div v-if="addMode">
         <BForm @submit.prevent="addTransfer">
           <BCard class="border">
             <button @click="addMode = false" class="close-btn">&times;</button>
@@ -10,7 +10,6 @@
                     label-for="originAccount"
                     :state="!errors.originAccount ? true : false"
                     invalid-feedback="Conta de origem é obrigatória e deve ser um número válido."
-                    max="10"
                     >
                     <BFormInput
                         id="originAccount"
@@ -18,6 +17,7 @@
                         placeholder="XXXXXXXXXX"
                         type="number"
                         :state="!errors.originAccount ? true : false"
+                        @input="validateForm"
                     />
                     </BFormGroup>
                 </BCol>
@@ -26,6 +26,7 @@
                     label="Conta de destino:*"
                     label-for="targetAccount"
                     :state="!errors.targetAccount ? true : false"
+                    @input="validateForm"
                     invalid-feedback="Conta de destino é obrigatória e deve ser um número válido."
                     >
                     <BFormInput
@@ -34,7 +35,7 @@
                         placeholder="XXXXXXXXXX"
                         type="number"
                         :state="!errors.targetAccount ? true : false"
-                        max="10"
+                        @input="validateForm"
                     />
                     </BFormGroup>
                 </BCol>
@@ -43,6 +44,7 @@
                     label="Valor a ser transferido:*"
                     label-for="transferValue"
                     :state="!errors.transferValue ? true : false"
+                    @input="validateForm"
                     invalid-feedback="Valor é obrigatório e deve ser um valor numérico válido."
                     >
                     <BFormInput
@@ -66,6 +68,7 @@
                         id="scheduledDate"
                         v-model="addNew.scheduledDate"
                         type="date"
+                        @input="validateForm"
                         :state="!errors.scheduledDate ? true : false"
                     />
                     </BFormGroup>
@@ -73,11 +76,12 @@
             </BRow>
 
             <BRow>
-                <BCol class="text-right mt-2 p-2" md="12" align-self="end">
+                <BCol class="text-right mt-2 p-2" md="12" align="right">
                     <BButton
                         variant="success"
-                        class="btn-md"
+                        class="btn-md mr-3"
                         type="submit"
+                        :disabled="!isFormValid"
                     >
                         <span>Salvar</span>
                     </BButton>
@@ -93,8 +97,9 @@
           </BCard>
         </BForm>
     </div>
-    
-      
+    <div v-else align="right">
+      <BButton @click="addMode = true" variant="primary">Adicionar transferencia</BButton>
+    </div>
       
     </template>
     
@@ -120,9 +125,6 @@
         BFormGroup,
         BButton,
       },
-      props: {
-        dadosItens: { type: Object, default: () => {} },
-      },
 
       computed: {
         formattedValue() {
@@ -145,6 +147,7 @@
                 scheduledDate: '',
             },
             errors: {},
+            addMode: false
         }
       },
       methods: {
@@ -154,13 +157,13 @@
             if (this.addNew.originAccount.length !== 10) {
                 this.errors.originAccount = true;
             }
-            if (!this.addNew.targetAccount.length !== 10) {
+            if (this.addNew.targetAccount.length !== 10) {
                 this.errors.targetAccount = true;
             }
             if (!this.addNew.transferValue || isNaN(this.removeSpecialCharacters(this.addNew.transferValue))) {
                 this.errors.transferValue = true;
             }
-            if (!this.addNew.scheduledDate) {
+            if (!this.addNew.scheduledDate || this.isMoreThan50Days(this.addNew.scheduledDate)) {
                 this.errors.scheduledDate = true;
             }
         },
@@ -176,28 +179,43 @@
             this.addNew.transferValue = (inputValue)
         },
         removeSpecialCharacters(value) {
-            // Remove o símbolo "R$" e espaços
+            
             let newValue = value.replace(/[^0-9,]/g, '');
             
-            // Substitui a vírgula por um ponto
+            
             newValue = newValue.replace(',', '.');
 
             return newValue;
         },
 
         async addTransfer(){
-            this.addNew.transferValue = this.addNew.transferValue.includes(',') ? this.removeSpecialCharacters(this.addNew.transferValue) : this.addNew.transferValue
-            configAxios.post('/v1/transfer', this.addNew).then(() => {
-                this.addNew = {}
-                this.$emit('transfer-added')
-            }).catch(() => {
-                
-            })
+            this.validateForm()
+            if(this.isFormValid){
+                this.addNew.transferValue = this.addNew.transferValue.includes(',') ? this.removeSpecialCharacters(this.addNew.transferValue) : this.addNew.transferValue
+                configAxios.post('/v1/transfer', this.addNew).then(() => {
+                    this.addNew = {}
+                    this.$emit('transfer-added')
+                }).catch(() => {
+                    
+                })
+            }
+            
         },
 
         resetForm() {
             this.addNew = {}
             this.errors = {}
+        },
+
+        isMoreThan50Days(scheduledDate) {
+            const today = new Date();
+            const scheduled = new Date(scheduledDate);
+
+            
+            const diffTime = Math.abs(scheduled - today);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            return diffDays > 50;
         },
 
       }
