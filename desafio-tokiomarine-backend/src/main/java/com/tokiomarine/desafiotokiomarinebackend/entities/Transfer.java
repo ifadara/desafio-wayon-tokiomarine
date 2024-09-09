@@ -14,9 +14,9 @@ public class Transfer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-    private Integer originAccount;
+    private Long originAccount;
     @Column(nullable = false)
-    private Integer targetAccount;
+    private Long targetAccount;
     @Column(nullable = false)
     private Double transferValue;
     @Column(nullable = false)
@@ -35,7 +35,7 @@ public class Transfer {
     public Transfer(){
     }
 
-    public Transfer(Long id, Integer originAccount, Integer targetAccount, Double transferValue, Double transferPercentage, Double feeAmount, Double totalTransferValue, LocalDate transferDate, LocalDate scheduledDate) {
+    public Transfer(Long id, Long originAccount, Long targetAccount, Double transferValue, Double transferPercentage, Double feeAmount, Double totalTransferValue, LocalDate transferDate, LocalDate scheduledDate) {
         this.id = id;
         this.originAccount = originAccount;
         this.targetAccount = targetAccount;
@@ -67,19 +67,19 @@ public class Transfer {
         this.id = id;
     }
 
-    public Integer getOriginAccount() {
+    public Long getOriginAccount() {
         return originAccount;
     }
 
-    public void setOriginAccount(Integer originAccount) {
+    public void setOriginAccount(Long originAccount) {
         this.originAccount = originAccount;
     }
 
-    public Integer getTargetAccount() {
+    public Long getTargetAccount() {
         return targetAccount;
     }
 
-    public void setTargetAccount(Integer targetAccount) {
+    public void setTargetAccount(Long targetAccount) {
         this.targetAccount = targetAccount;
     }
 

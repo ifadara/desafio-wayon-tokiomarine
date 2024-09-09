@@ -58,7 +58,7 @@ public class TransferService {
             transferDto.setTransferPercentage(0.025 * 100);
             totalValue = transferDto.getTransferValue() + percentageValue;
             transferDto.setTotalTransferValue(totalValue);
-        } else if (period >= 1 && period <= 10 && transferDto.getTransferValue() > 12.00) {
+        } else if (period >= 1 && period <= 10 && transferDto.getTransferValue() >= 12.00) {
             percentageValue = transferDto.getTransferValue() * 0.0;
             transferDto.setFeeAmount(percentageValue);
             transferDto.setTransferPercentage(0.0);

@@ -75,6 +75,11 @@
                 </BCol>
             </BRow>
 
+            <div v-if="submissionError" class="alert alert-danger mt-2">
+                <button @click="submissionError = null" class="close-btn">&times;</button>
+                {{ submissionError }}
+            </div>
+
             <BRow>
                 <BCol class="text-right mt-2 p-2" md="12" align="right">
                     <BButton
@@ -99,6 +104,9 @@
     </div>
     <div v-else align="right">
       <BButton @click="addMode = true" variant="primary">Adicionar transferencia</BButton>
+    </div>
+    <div v-if="showCreateSucces" class="alert alert-success">
+      Operação realizada com sucesso!
     </div>
       
     </template>
@@ -147,17 +155,20 @@
                 scheduledDate: '',
             },
             errors: {},
-            addMode: false
+            addMode: false,
+            submissionError: null,
+            showCreateSucces: false,
         }
       },
       methods: {
 
         validateForm() {
             this.errors = {};
-            if (this.addNew.originAccount.length !== 10) {
+            this.submissionError = null
+            if (!this.addNew.originAccount || this.addNew.originAccount.length !== 10) {
                 this.errors.originAccount = true;
             }
-            if (this.addNew.targetAccount.length !== 10) {
+            if (!this.addNew.targetAccount || this.addNew.targetAccount.length !== 10) {
                 this.errors.targetAccount = true;
             }
             if (!this.addNew.transferValue || isNaN(this.removeSpecialCharacters(this.addNew.transferValue))) {
@@ -189,14 +200,22 @@
         },
 
         async addTransfer(){
+            const payload = {
+                originAccount: parseInt(this.addNew.originAccount, 10),
+                targetAccount: parseInt(this.addNew.targetAccount, 10),
+                transferValue: parseFloat(this.addNew.transferValue),
+                scheduledDate: new Date(this.addNew.scheduledDate)
+            };
+
             this.validateForm()
             if(this.isFormValid){
                 this.addNew.transferValue = this.addNew.transferValue.includes(',') ? this.removeSpecialCharacters(this.addNew.transferValue) : this.addNew.transferValue
-                configAxios.post('/v1/transfer', this.addNew).then(() => {
+                configAxios.post('/v1/transfer', payload).then(() => {
                     this.addNew = {}
                     this.$emit('transfer-added')
+                    this.showMessage()
                 }).catch(() => {
-                    
+                    this.submissionError = 'Erro ao tentar os parâmetros não aplicam taxa. Tente novamente.'
                 })
             }
             
@@ -216,6 +235,14 @@
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
             return diffDays > 50;
+        },
+
+        showMessage() {
+            this.showCreateSucces = true;
+            
+            setTimeout(() => {
+                this.showCreateSucces = false;
+            }, 3000);
         },
 
       }

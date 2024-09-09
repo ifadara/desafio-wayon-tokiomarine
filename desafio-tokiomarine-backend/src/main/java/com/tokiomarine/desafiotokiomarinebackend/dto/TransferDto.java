@@ -9,8 +9,8 @@ import java.time.LocalDate;
 
 public class TransferDto {
     private Long id;
-    private Integer originAccount;
-    private Integer targetAccount;
+    private Long originAccount;
+    private Long targetAccount;
     private Double transferValue;
     private Double transferPercentage;
     private Double feeAmount;
@@ -23,7 +23,7 @@ public class TransferDto {
     public TransferDto() {
     }
 
-    public TransferDto(Long id, Integer originAccount, Integer targetAccount, Double transferValue, Double transferPercentage, Double feeAmount, Double totalTransferValue, LocalDate transferDate, LocalDate scheduledDate) {
+    public TransferDto(Long id, Long originAccount, Long targetAccount, Double transferValue, Double transferPercentage, Double feeAmount, Double totalTransferValue, LocalDate transferDate, LocalDate scheduledDate) {
         this.id = id;
         this.originAccount = originAccount;
         this.targetAccount = targetAccount;
@@ -55,19 +55,19 @@ public class TransferDto {
         this.id = id;
     }
 
-    public Integer getOriginAccount() {
+    public Long getOriginAccount() {
         return originAccount;
     }
 
-    public void setOriginAccount(Integer originAccount) {
+    public void setOriginAccount(Long originAccount) {
         this.originAccount = originAccount;
     }
 
-    public Integer getTargetAccount() {
+    public Long getTargetAccount() {
         return targetAccount;
     }
 
-    public void setTargetAccount(Integer targetAccount) {
+    public void setTargetAccount(Long targetAccount) {
         this.targetAccount = targetAccount;
     }
 
