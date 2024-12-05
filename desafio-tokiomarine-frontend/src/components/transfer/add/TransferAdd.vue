@@ -81,7 +81,7 @@
             </div>
 
             <BRow>
-                <BCol class="text-right mt-2 p-2" md="12" align="right">
+                <BCol class="text-right mt-2" md="12" align="right">
                     <BButton
                         variant="success"
                         class="btn-md mr-3"
@@ -96,7 +96,7 @@
                         @click="resetForm"
                     >
                         Cancelar
-                    </BButton>  
+                    </BButton>
                 </BCol>
             </BRow>
           </BCard>
@@ -200,22 +200,26 @@
         },
 
         async addTransfer(){
+            console.log(this.addNew.transferValue.split('$'))
+            const transferValue = this.addNew.transferValue.split('$')[1].trimStart().replace(',', '.')
+            console.log(transferValue)
             const payload = {
                 originAccount: parseInt(this.addNew.originAccount, 10),
                 targetAccount: parseInt(this.addNew.targetAccount, 10),
-                transferValue: parseFloat(this.addNew.transferValue),
+                transferValue: parseFloat(transferValue),
                 scheduledDate: new Date(this.addNew.scheduledDate)
             };
 
+            console.log(payload.transferValue)
+
             this.validateForm()
             if(this.isFormValid){
-                this.addNew.transferValue = this.addNew.transferValue.includes(',') ? this.removeSpecialCharacters(this.addNew.transferValue) : this.addNew.transferValue
                 configAxios.post('/v1/transfer', payload).then(() => {
                     this.addNew = {}
                     this.$emit('transfer-added')
                     this.showMessage()
                 }).catch(() => {
-                    this.submissionError = 'Erro ao tentar os parâmetros não aplicam taxa. Tente novamente.'
+                    this.submissionError = 'Erro ao realizar transferência, os parâmetros não aplicam taxa. Tente novamente.'
                 })
             }
             
